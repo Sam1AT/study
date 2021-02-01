@@ -1,0 +1,14 @@
+{
+  "name": "study",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+      "start": "node src/index.js"
+  },
+  "author": "m0h0n sam1AT",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
