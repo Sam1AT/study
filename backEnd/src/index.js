@@ -40,11 +40,14 @@ app.post("/api/v1/register", async (req, res) => {
     return res.json({ err: err });
   }
   // make user in db
-  const user = new User({ username: body.username, password: body.password });
+  const user = new User({
+    username: body.username.toLowerCase(),
+    password: body.password,
+  });
   // save user in db and handle error and if ther is not error return some data
   user.save((err) => {
     if (err) {
-      return res.json(err);
+      return res.json({ err: err });
     } else {
       res.json({ usernaem: user.username });
     }
