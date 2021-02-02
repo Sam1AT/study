@@ -69,6 +69,30 @@ app.post("/api/v1/register", async (req, res) => {
   });
 });
 
+app.post("/api/v1/login", async (req, res) => {
+  // Get post body
+  const body = req.body;
+  // get user from db
+  User.findOne({ username: body.username }, (err, doc) => {
+    if (err) {
+      return res.json({ err: err });
+    }
+    if (!doc) {
+      return res.json({ err: "username or password invalid" });
+    }
+    bcrypt.compare(body.password, doc.password, (err, same) => {
+      if (err) {
+        return res.json({ err: err });
+      }
+      if (!same) {
+        return res.json({ err: "username or password invalid" });
+      }
+      const token = jwt.sign({ token: doc._id }, jwtToken);
+      return res.json({ username: doc.username, jwt: token });
+    });
+  });
+});
+
 app.listen(PORT, (err) => {
   if (err) {
     return console.log(err);
