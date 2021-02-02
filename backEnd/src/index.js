@@ -4,6 +4,8 @@ const mongoose = require("mongoose");
 
 const jwt = require("jsonwebtoken");
 
+const bcrypt = require("bcrypt");
+
 require("dotenv").config();
 
 const jwtToken = process.env.JWTTOKEN;
@@ -45,19 +47,25 @@ app.post("/api/v1/register", async (req, res) => {
   } catch (err) {
     return res.json({ err: err });
   }
-  // make user in db
-  const user = new User({
-    username: body.username.toLowerCase(),
-    password: body.password,
-  });
-  // save user in db and handle error and if ther is not error return some data
-  user.save((err) => {
+  // hash password with bcrypt
+  bcrypt.hash(body.password, 10, (err, hash) => {
     if (err) {
       return res.json({ err: err });
-    } else {
-      const token = jwt.sign({ token: user._id }, jwtToken);
-      res.json({ username: user.username, jwt: token });
     }
+    // make user in db
+    const user = new User({
+      username: body.username.toLowerCase(),
+      password: hash,
+    });
+    // save user in db and handle error and if ther is not error return some data
+    user.save((err) => {
+      if (err) {
+        return res.json({ err: err });
+      } else {
+        const token = jwt.sign({ token: user._id }, jwtToken);
+        res.json({ username: user.username, jwt: token });
+      }
+    });
   });
 });
 
