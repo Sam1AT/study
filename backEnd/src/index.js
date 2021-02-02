@@ -2,7 +2,11 @@ const express = require("express");
 
 const mongoose = require("mongoose");
 
+const jwt = require("jsonwebtoken");
+
 require("dotenv").config();
+
+const jwtToken = process.env.JWTTOKEN;
 
 const app = express();
 
@@ -51,7 +55,8 @@ app.post("/api/v1/register", async (req, res) => {
     if (err) {
       return res.json({ err: err });
     } else {
-      res.json({ usernaem: user.username });
+      const token = jwt.sign({ token: user._id }, jwtToken);
+      res.json({ username: user.username, jwt: token });
     }
   });
 });
