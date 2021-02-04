@@ -93,6 +93,27 @@ app.post("/api/v1/login", async (req, res) => {
   });
 });
 
+app.get("/api/v1/info", (req, res) => {
+  const body = req.body;
+
+  jwt.verify(body.jwt, jwtToken, (err, decode) => {
+    if (err) {
+      return res.json({ err: err });
+    }
+    User.findById(decode.token, (err2, doc) => {
+      if (err2) {
+        return res.json({ err: err2 });
+      }
+
+      if (!doc) {
+        return res.json({ err: "jwt is invalid!" });
+      }
+
+      res.json({ username: doc.username, expired: doc.expired });
+    });
+  });
+});
+
 app.listen(PORT, (err) => {
   if (err) {
     return console.log(err);
